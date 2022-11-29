@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        th{ 
+            cursor: pointer;
+            color:#fff;
+          }
+        h1{
+            text-align: center;
+        }  
+    </style>
+</head>
+<body>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+   <!-- <script src="./script.js"></script> //this is not working -->
+
+<h1>Ice & Fire API - Books</h1>
+<form action="">
+    <label for="">Type a Book Name</label>
+    <input type="search" class="inputField form-control" id="search-box" placeholder="search">
+</form>
+
+<table class="table table-striped">
+    <tr  class="bg-info">
+        <th  class="bg-info" data-colname="name" data-order="desc">Name</th>
+        <th  data-colname="authors" data-order="desc">Authors</th>
+        <th  data-colname="ISBN" data-order="desc">ISBN</th>
+        <th  data-colname="NumberOfPages" data-order="desc">NumberOfPages</th>
+        <th  data-colname="Publisher" data-order="desc">Publisher</th>
+        <th  data-colname="Released" data-order="desc">Released</th>
+    </tr>
+    <tbody id="myTable">
+        
+    </tbody>
+</table>
+<script>
+    let books1 = [];
+  
+    //function to fetch the books from the given Ice & Fire API  
+    async function getBooks(){
+        try{
+         // fetching the books records from the given api link
+         let res = await fetch("https://anapioficeandfire.com/api/books")
+         let books = await res.json()
+         for(let j=0; j<books.length; j++)
+         {
+          books1.push(books[j])
+         }
+         buildTable(books)
+    }
+    catch(err){
+        console.log("Something went wrong",+err)
+    }
+    }getBooks();
+    
+    //search box code
+    $('#search-box').on('keyup', function(){
+       var value = $(this).val()
+       console.log('Value:',value)
+       var data = searchTable(value, books1)    //search string assgined here
+       buildTable(data)   
+    })
+         
+    // search function
+    function searchTable(value, data){
+    
+    var filteredData = []
+    
+    for(let i=0; i < data.length; i++)
+    {
+      value = value.toLowerCase()
+      var name = data[i].name.toLowerCase()
+      
+      if (name.includes(value)){
+          filteredData.push(data[i])
+       }
+    }
+    return filteredData
+    } 
+
+    //Output Table with book details
+    function buildTable(books1){
+    var table = document.getElementById('myTable')
+    table.innerHTML = ''
+    for(let i=0; i<books1.length;i++)
+    {
+       var row = `<tr>
+                    <td>${books1[i].name}</td>
+                    <td>${books1[i].authors}</td>
+                    <td>${books1[i].isbn}</td>
+                    <td>${books1[i].numberOfPages}</td>
+                    <td>${books1[i].publisher}</td>
+                    <td>${books1[i].released}</td>
+                  </tr>`
+       table.innerHTML += row
+    }
+    }
+    </script>
+</body>
+</html>
